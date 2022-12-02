@@ -1,6 +1,7 @@
-(ns aoc-2022-clojure.day01.solution-test
-  (:require [aoc-2022-clojure.day01.solution :as sut]
-            [clojure.test :as t]))
+(ns aoc-2022-clojure.day01-test
+  (:require
+   [aoc-2022-clojure.day01 :as sut]
+   [clojure.test :as t]))
 
 (def test-input "1000
 2000

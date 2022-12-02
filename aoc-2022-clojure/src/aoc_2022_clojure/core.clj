@@ -1,7 +1,8 @@
 (ns aoc-2022-clojure.core
-  (:require [aoc-2022-clojure.day01.solution :as day01]
-            [clojure.java.io :as io])
-  (:gen-class))
+  (:gen-class)
+  (:require
+   [aoc-2022-clojure.day01 :as day01]
+   [clojure.java.io :as io]))
 
 (defn -main
   "I don't do a whole lot ... yet."

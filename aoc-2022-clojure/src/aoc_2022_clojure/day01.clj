@@ -1,4 +1,4 @@
-(ns aoc-2022-clojure.day01.solution
+(ns aoc-2022-clojure.day01
   "day 01 solution"
   (:require [clojure.string :as string])
   (:import [java.lang Integer]))
