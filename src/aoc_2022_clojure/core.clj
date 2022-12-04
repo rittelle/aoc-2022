@@ -4,6 +4,7 @@
    [aoc-2022-clojure.day01 :as day01]
    [aoc-2022-clojure.day02 :as day02]
    [aoc-2022-clojure.day03 :as day03]
+   [aoc-2022-clojure.day04 :as day04]
    [clojure.java.io :as io]))
 
 (defn -main
@@ -11,4 +12,5 @@
   [& args]
   (day01/print-solution (slurp (io/resource "day01-input.txt")))
   (day02/print-solution (slurp (io/resource "day02-input.txt")))
-  (day03/print-solution (slurp (io/resource "day03-input.txt"))))
+  (day03/print-solution (slurp (io/resource "day03-input.txt")))
+  (day04/print-solution (slurp (io/resource "day04-input.txt"))))
