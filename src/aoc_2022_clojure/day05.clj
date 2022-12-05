@@ -3,18 +3,29 @@
 
 ;; Part 1
 
+(defn letter?
+  "Return c if it is a letter and nil otherwise."
+  [ch] (if (java.lang.Character/isLetter ch) ch nil))
+
+(defn
+  conj-if
+  "Perform conj if x is not nil, otherwise return coll unchanged."
+  ([coll x] (if (some? x) (conj coll x) coll))
+  ([coll] coll))
+
 (defn parse-initial-state
   "Parse the initial state into a vector of lists representing the contents. Heads are the top item."
   [input-str]
   (let [str-lines (string/split-lines input-str)
-        longest-line-length (reduce max (map count str-lines))
+        longest-line-length (transduce (map count) max 0 str-lines)
         str-lines-padded (map #(take longest-line-length (concat % (repeat \space))) str-lines)]
-    (->> str-lines-padded
-         (map (partial partition-all 3 4))
-         (map (partial map second))
-         (apply (partial mapv list))
-         (map (partial filter #(java.lang.Character/isLetter %)))
-         (into (vector)))))
+    (vec (transduce
+          (map (comp (partial map letter?)
+                     (partial take-nth 4)  ; extract the characters only
+                     (partial drop 1)))    ; ^
+          (partial map conj-if)            ; append each item to one of the sequences from init
+          (repeat '())
+          (reverse str-lines-padded)))))
 
 (defn parse-operations
   "Parse the operations into a vector of vectors in the form [number from to]"
@@ -50,9 +61,11 @@
 (defn solution-1
   "Solve the first part"
   [input-str]
-  (let [[state operation] (read-input-1 input-str)
-        final-state (reduce (apply-operation reverse) state operation)]
-    (string/join (get-topmost-items final-state))))
+  (->> input-str
+       (read-input-1)
+       (apply reduce (apply-operation reverse))
+       (get-topmost-items)
+       (string/join)))
 
 (defn print-solution-1
   "Print the solution to part 1 to stdout."
@@ -63,9 +76,11 @@
 (defn solution-2
   "Solve the second part"
   [input-str]
-  (let [[state operation] (read-input-1 input-str)
-        final-state (reduce (apply-operation identity) state operation)]
-    (string/join (get-topmost-items final-state))))
+  (->> input-str
+       (read-input-1)
+       (apply reduce (apply-operation identity))
+       (get-topmost-items)
+       (string/join)))
 
 (defn print-solution-2
   "Print the solution to part 2 to stdout."
