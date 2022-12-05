@@ -8,17 +8,18 @@
   [input-str]
   (let [str-lines (string/split-lines input-str)
         longest-line-length (reduce max (map count str-lines))
-        str-lines-padded (map #(take longest-line-length (concat % (repeat \space))) str-lines)
-        container-strs (map (partial partition-all 3 4) str-lines-padded)
-        container-trimmed-strs (map (partial map (partial second)) container-strs)
-        transposed (apply (partial mapv list) container-trimmed-strs)
-        transposed-filtered (map (partial filter #(java.lang.Character/isLetter %)) transposed)]
-    (into (vector) transposed-filtered)))
+        str-lines-padded (map #(take longest-line-length (concat % (repeat \space))) str-lines)]
+    (->> str-lines-padded
+         (map (partial partition-all 3 4))
+         (map (partial map second))
+         (apply (partial mapv list))
+         (map (partial filter #(java.lang.Character/isLetter %)))
+         (into (vector)))))
 
 (defn parse-operations
   "Parse the operations into a vector of vectors in the form [number from to]"
   [input-str]
-  (map (comp (partial apply vector) (partial map parse-long) (partial drop 1))
+  (map (partial into [] (comp (drop 1) (map parse-long)))
        (re-seq #"move (\d+) from (\d+) to (\d+)" input-str)))
 
 (defn read-input-1
@@ -30,17 +31,17 @@
     [initial-state operations]))
 
 (defn apply-operation
-  "Apply an operation to a state.  Reversese the order of the transferred items if reverse-transferred is true."
-  [reverse-transferred]
+  "Apply an operation to a state.  Applies transformer to the list of containers being transferred."
+  [transformer]
   (fn
     [state [cnt from to]]
     (let [from-idx (- from 1)
           to-idx (- to 1)
-          from-stack (state from-idx)
-          [taken from-stack-new] (split-at cnt from-stack)
-          to-stack (state to-idx)
-          to-stack-new (concat (if reverse-transferred (reverse taken) taken) to-stack)]
-      (assoc state from-idx from-stack-new to-idx to-stack-new))))
+          [taken from-stack-new] (split-at cnt (state from-idx))
+          to-stack-new (concat (transformer taken) (state to-idx))]
+      (assoc state
+             from-idx from-stack-new
+             to-idx to-stack-new))))
 
 (defn get-topmost-items
   "Get the topmost items as a sequence."
@@ -50,7 +51,7 @@
   "Solve the first part"
   [input-str]
   (let [[state operation] (read-input-1 input-str)
-        final-state (reduce (apply-operation true) state operation)]
+        final-state (reduce (apply-operation reverse) state operation)]
     (string/join (get-topmost-items final-state))))
 
 (defn print-solution-1
@@ -63,7 +64,7 @@
   "Solve the second part"
   [input-str]
   (let [[state operation] (read-input-1 input-str)
-        final-state (reduce (apply-operation false) state operation)]
+        final-state (reduce (apply-operation identity) state operation)]
     (string/join (get-topmost-items final-state))))
 
 (defn print-solution-2
