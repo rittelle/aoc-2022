@@ -11,7 +11,7 @@
 (defn solution-1
   "Solve the first part"
   [input-str] (->> input-str
-                   (reat-input-1)
+                   (read-input-1)
                    ;; …
                    (reduce +)))
 
