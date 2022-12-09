@@ -78,10 +78,10 @@
                         command (second words)]
                     (case command
                       "ls" (let [[ls-output remaining-session] (split-with #(not (string/starts-with? % "$ ")) remaining-lines)
-                                 new-files (read-ls-output current-path ls-output)]
+                                 new-file (read-ls-output current-path ls-output)]
                              (recur remaining-session
                                     current-path
-                                    (reduce add-entry-to-tree tree new-files)))
+                                    (reduce add-entry-to-tree tree new-file)))
                       "cd" (recur remaining-lines
                                   (read-path-in-context current-path (nth words 2))
                                   tree)
