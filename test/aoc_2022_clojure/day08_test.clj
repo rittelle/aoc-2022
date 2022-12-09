@@ -9,15 +9,6 @@
 35390")
 
 (t/deftest part-1
-  (t/testing "The visibility algorithm"
-    (let [grid (sut/read-input test-input)]
-      (t/is (= #{:left :top} (sut/calculate-directions-where-visible grid [1 1])))
-      (t/is (= #{:top :right} (sut/calculate-directions-where-visible grid [1 2])))
-      (t/is (= #{} (sut/calculate-directions-where-visible grid [2 2])))
-      (t/is (= #{:right} (sut/calculate-directions-where-visible grid [2 3])))
-      (t/is (not-empty (sut/calculate-directions-where-visible grid [3 2])))
-      (t/is (= #{} (sut/calculate-directions-where-visible grid [3 1])))
-      (t/is (= #{} (sut/calculate-directions-where-visible grid [3 3])))))
   (t/testing "Part 1 test input"
     (t/is (= 21 (sut/solution-1 test-input))))
   (t/testing "Part 1 real input"

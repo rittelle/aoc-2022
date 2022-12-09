@@ -11,61 +11,6 @@
   "Read the input and split it into a list of pairs."
   [input-str] (to-array-2d (map (partial map #(Character/digit % 10)) (string/split-lines input-str))))
 
-(defn get-inner-idxs
-  "Returns a sequence of the indexes of the trees not at the border."
-  [grid]
-  (let [height (alength grid)
-        width (alength (aget grid 0))]
-    (for [y (range 1 (dec height))
-          x (range 1 (dec width))]
-      [y x]))
-  )
-
-(defn calculate-directions-where-visible
-  "Calculates the directions from where the tree at the given coordinates is visible."
-  [grid [tree-y tree-x]]
-  (let [height (alength grid)
-        width (alength (aget grid tree-y))
-        tree-height (aget grid tree-y tree-x)
-        trees-left (for [x (range tree-x)] (aget grid tree-y x))
-        trees-right (for [x (range (inc tree-x) width)] (aget grid tree-y x))
-        trees-above (for [y (range tree-y)] (aget grid y tree-x))
-        trees-below (for [y (range (inc tree-y) height)] (aget grid y tree-x))
-        visible-over? (fn [trees-in-line] (nil? (some (partial <= tree-height) trees-in-line)))]
-    (set/union (if (visible-over? trees-left) #{:left} #{})
-               (if (visible-over? trees-right) #{:right} #{})
-               (if (visible-over? trees-above) #{:top} #{})
-               (if (visible-over? trees-below) #{:bottom} #{}))))
-
-(defn tree-visible-from-any-direction?
-  "Returns true if the tree is visible from any direction."
-  [grid tree-pos]
-  (not-empty (calculate-directions-where-visible grid tree-pos)))
-
-(defn count-visible-trees
-  "Counts the visible trees from a grid."
-  [grid]
-  (let [height (alength grid)
-        width (alength (aget grid 0))
-        count-at-border (* 2 (+ height width -2))
-        visible-inner (->> grid
-                           (get-inner-idxs)
-                           (filter (partial tree-visible-from-any-direction? grid))
-                           (count))]
-    (+ count-at-border visible-inner)))
-
-(defn solution-1
-  "Solve the first part"
-  [input-str] (->> input-str
-                   (read-input)
-                   (count-visible-trees)))
-
-(defn print-solution-1
-  "Print the solution to part 1 to stdout."
-  [input-str] (println (str "  Part 1: " (solution-1 input-str) " trees are visible from the outside.")))
-
-;; Part 2
-
 (defn transpose
   "Transposes the given grid"
   [grid]
@@ -78,11 +23,36 @@
         apply-to-axes-reversed #(map reverse (apply-to-axes (map reverse %)))
         rows grid
         columns (transpose grid)]
+    ;; join the results for each element using joinf
     (map (partial map joinf)
          (apply-to-axes rows)
          (apply-to-axes-reversed rows)
          (transpose (apply-to-axes columns))
          (transpose (apply-to-axes-reversed columns)))))
+
+(defn check-visibility
+  "Checks for each tree whether it is visible from the outside from the start of the given axis."
+  [axis]
+  (reverse (first (reduce (fn [[result, tallest-height] height]
+                            [(conj result (> height tallest-height))
+                             (max tallest-height height)])
+                          ['() -1]
+                          axis))))
+
+(defn solution-1
+  "Solve the first part"
+  [input-str] (->> input-str
+                   (read-input)
+                   (apply-over-all-axes check-visibility #(or %1 %2 %3 %4))
+                   (apply concat)
+                   (filter true?)
+                   (count)))
+
+(defn print-solution-1
+  "Print the solution to part 1 to stdout."
+  [input-str] (println (str "  Part 1: " (solution-1 input-str) " trees are visible from the outside.")))
+
+;; Part 2
 
 (defn calculate-viewing-distances
   "Calculate all viewing distances over an axis in the forward direction."
