@@ -139,6 +139,6 @@
 (defn print-solution
   "Print the solution both parts to stdout."
   [input-str]
-  (println "Day 0x:")
+  (println "Day 07:")
   (print-solution-1 input-str)
   (print-solution-2 input-str))
