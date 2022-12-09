@@ -2,18 +2,18 @@
 
 ;; Part 1
 
-(defn read-input-1
+(defn read-input
   "Read the input and split it into a list of pairs."
-  [input-str] 42)
+  [input-str] (to-array-2d (map (partial map #(Character/digit % 10)) (string/split-lines input-str))))
 
 ;; …
 
 (defn solution-1
   "Solve the first part"
   [input-str] (->> input-str
-                   (read-input-1)
-                   ;; …
-                   (reduce +)))
+                   (read-input)
+                   ;; ...
+                   ((constantly 42))))
 
 (defn print-solution-1
   "Print the solution to part 1 to stdout."
@@ -21,18 +21,14 @@
 
 ;; Part 2
 
-(defn read-input-2
-  "Read the input and split it into a list of lists representing the groups."
-  [input-str] 42)
-
 ;; …
 
 (defn solution-2
   "Solve the second part"
   [input-str] (->> input-str
-                   (read-input-2)
-                   ;; …
-                   (reduce +)))
+                   (read-input)
+                   ;; ...
+                   ((constantly 42))))
 
 (defn print-solution-2
   "Print the solution to part 2 to stdout."
@@ -40,9 +36,11 @@
 
 ;; Both parts combined
 
+(def input (slurp (io/resource "day0x-input.txt")))
+
 (defn print-solution
   "Print the solution both parts to stdout."
-  [input-str]
+  []
   (println "Day 0x:")
-  (print-solution-1 input-str)
-  (print-solution-2 input-str))
+  (print-solution-1 input)
+  (print-solution-2 input))
